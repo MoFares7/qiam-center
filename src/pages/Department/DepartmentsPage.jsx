@@ -5,36 +5,40 @@ import {
   Divider,
   CircularProgress,
   IconButton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from '@mui/material';
 import SearchField from '../../components/SearchField';
 import SearchIcon from '@mui/icons-material/Search';
 import TableCard from './TableCard';
 import { useDispatch, useSelector } from 'react-redux';
-import { getDepartments } from '../../services/DepartmentServices/getDepatmentsSlice';
-import { deleteDepartments } from '../../services/DepartmentServices/deleteDepartmentsSlice';
 import DialogTextField from '../../components/DialogTextField';
 import DialogInfo from '../../components/DialogAddInfo';
-import { addDepartments } from '../../services/DepartmentServices/addDepartmentSlice';
-import { addDepartmentsStart, addDepartmentsSuccess, addDepartmentsFailure } from '../../services/DepartmentServices/addDepartmentSlice';
+import { getDepartments } from '../../services/DepartmentServices/getDepatmentsSlice';
+import { addDepartments, addDepartmentsStart, addDepartmentsSuccess, addDepartmentsFailure } from '../../services/DepartmentServices/addDepartmentSlice';
+import { editDepartments, editDepartmentsFailure, editDepartmentsSuccess } from '../../services/DepartmentServices/editDepartmentsSlice';
+import { deleteDepartments, deleteDepartmentsSuccess, deleteDepartmentsFailure } from '../../services/DepartmentServices/deleteDepartmentsSlice';
 
 const DepartmentsPage = () => {
   const [open, setOpen] = useState(false);
   const [departmentName, setDepartmentName] = useState('');
   const [departmentDescription, setDepartmentDescription] = useState('');
   const [departmentNameError, setDepartmentNameError] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [selectedDepartmentId, setSelectedDepartmentId] = useState(null);
+
   const dispatch = useDispatch();
   const departments = useSelector((state) => state.getDepartment.data);
-  const [isEditing, setIsEditing] = useState(false);
 
   // Ensure that departments is always an array, if not set it to an empty array
   const departmentList = Array.isArray(departments) ? departments : [];
 
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [selectedDepartmentId, setSelectedDepartmentId] = useState(null);
-
 
   //?  ////////// open dialog add department ////////////////
-  const handleOpenDialog = (editing = false, rowId = null) => {
+  const handleOpenDialog = (editing = false, rowId = 1) => {
     setIsEditing(editing);
     setOpen(true);
 
@@ -65,6 +69,10 @@ const DepartmentsPage = () => {
   }, [dispatch]);
 
   //? ////////////////handle add Department///////////////////////// 
+  const handleAddClick = () => {
+    handleOpenDialog(false);
+  }
+
   const handleAddDepartment = () => {
     if (departmentName.trim() === '') {
       setDepartmentNameError(true);
@@ -95,27 +103,68 @@ const DepartmentsPage = () => {
 
   //? ////////////////handle Edit Department////////////////////////////
   const handleEditClick = (rowId) => {
-    handleOpenDialog(true);
+    handleOpenDialog(false);
+    setIsEditing(true)
 
+    if (departmentName.trim() === '') {
+      setDepartmentNameError(true);
+    } else {
+      setDepartmentNameError(false);
+
+      dispatch(
+        editDepartments({
+          id: rowId,
+          body: {
+            name: departmentName,
+            description: departmentDescription,
+          },
+        })
+      )
+        .then((response) => {
+
+          console.log('Edit successful:', response);
+          dispatch(editDepartmentsSuccess());
+          handleCloseDialog();
+          dispatch(getDepartments());
+        })
+        .catch((error) => {
+
+          console.error('Edit error:', error);
+          dispatch(editDepartmentsFailure(error));
+        });
+    }
   };
 
-  const handleDeleteConfirmation = async () => {
-    try {
-      const action = await dispatch(deleteDepartments({ id: 1 }));
-      const response = action.payload;
+  //? ///////////// handle Delete Department ////////////////////////////
+  const handleDeleteClick = async (rowId) => {
+    setDeleteDialogOpen(true);
+    console.log('before row ID:', rowId);
 
-      console.log('Response:', response);
+    dispatch(
+      deleteDepartments({
+        id: rowId,
+      })
+    )
+      .then((response) => {
+        // Check the response from the server
 
-      if (response && response.message) {
-        alert(response.message);
-      } else {
-        alert('Unexpected response structure');
-      }
+        console.log('after success row ID:', rowId);
 
-      setDeleteDialogOpen(false);
-    } catch (error) {
-      console.error('Error deleting department:', error);
-    }
+        console.log('delete successful:', response);
+        dispatch(deleteDepartmentsSuccess());
+        setDeleteDialogOpen(false);
+        dispatch(getDepartments());
+      })
+      .catch((error) => {
+        console.log('after Error row ID:', rowId);
+
+        console.error('delete error:', error);
+        dispatch(deleteDepartmentsFailure(error));
+      });
+  }
+
+  const handleDeleteDialogClose = () => {
+    setDeleteDialogOpen(false);
   };
 
   const columns = [
@@ -155,17 +204,16 @@ const DepartmentsPage = () => {
         <IconButton
           aria-label="Delete"
           onClick={() => {
-            handleDeleteConfirmation(department.dep_id);
+            handleDeleteClick(department.dep_id);
             console.log("department.name " + department.name);
           }}
         >
-          {/* Your icon component here */}
+
         </IconButton>
         <IconButton
           aria-label="Edit"
-          onClick={() => handleEditClick(department.id)}
+          onClick={() => handleEditClick(department.dep_id)}
         >
-          {/* <EditIcon style={{ fontSize: 20, color: '#1d2634' }} /> */}
         </IconButton>
       </>
     ),
@@ -240,7 +288,7 @@ const DepartmentsPage = () => {
       </Box>
       <Divider sx={{ pt: 3 }} />
 
-      <TableCard columns={columns} rows={rows} onEditClick={handleEditClick} onDeleteClick={handleDeleteConfirmation} />
+      <TableCard columns={columns} rows={rows} onEditClick={handleEditClick} onDeleteClick={handleDeleteClick} />
 
       <Button
         sx={{
@@ -257,14 +305,14 @@ const DepartmentsPage = () => {
             backgroundColor: '#303F9F',
           },
         }}
-        onClick={handleOpenDialog}
+        onClick={handleAddClick}
       >
         إضافة قسم
       </Button>
 
 
       <DialogInfo
-        errorCheck={handleAddDepartment}
+        onChnage={isEditing ? handleEditClick : handleAddDepartment}
         onClickOpen={open}
         onClickClose={handleCloseDialog}
         titleDialog={isEditing ? "تعديل قسم" : "إضافة قسم"}
@@ -327,6 +375,29 @@ const DepartmentsPage = () => {
           </>
         }
       />
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={deleteDialogOpen} onClose={handleDeleteDialogClose}>
+        <DialogTitle sx={{
+          fontFamily: 'Cairo',
+        }}>عملية حذف نهائية</DialogTitle>
+        <DialogContent>
+          هل أنت متأكد من إتمام عملية الحذف
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDeleteDialogClose} color="primary" sx={{
+            fontFamily: 'Cairo',
+          }}>
+            تراجع
+          </Button>
+          <Button onClick={() => handleDeleteClick(rowId)} color="error" sx={{
+            fontFamily: 'Cairo',
+          }}>
+            حذف
+          </Button>
+
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

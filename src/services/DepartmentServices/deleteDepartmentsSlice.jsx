@@ -7,34 +7,18 @@ export const deleteDepartments = createAsyncThunk(
         'api/departments',
         async ({ id }) => {
                 try {
-                        console.log(`Deleting department with ID: ${id}`);
-                        const token = localStorage.getItem('token');
-                        console.log('Request Headers:', {
-                                Authorization: `Bearer ${localStorage.getItem('token')}`,
-                        });
-
-                        const response = await axios.delete(`http://127.0.0.1:8000/api/departments/${id}`, {
+                        const response = await axios.put(`http://127.0.0.1:8000/api/departments/${id}`, null, {
                                 headers: {
                                         Authorization: `Bearer ${localStorage.getItem('token')}`,
                                 },
                         });
-
-                        console.log('Response:', response); // Log the entire response
-
-                        if (response.data && response.data.message) {
-                                console.log('Response Message:', response.data.message);
-                        }
-
-                        console.log('token:', token);
-                        return response;
+                        console.log("Department", response.data);
+                        return response.data.data;
                 } catch (e) {
-                        console.error('Error in deleteDepartments:', e);
-                        throw e; // Rethrow the error after logging
+                        throw e;
                 }
         }
 );
-
-
 
 const deleteDepartmentsSlice = createSlice({
         name: 'deleteDepartments',
@@ -44,21 +28,22 @@ const deleteDepartmentsSlice = createSlice({
                 error: null,
 
         },
-        reducers: {},
-        extraReducers: (builder) => {
-                builder
-                        .addCase(deleteDepartments.pending, (state) => {
-                                state.status = 'loading';
-                        })
-                        .addCase(deleteDepartments.fulfilled, (state, action) => {
-                                state.status = 'succeeded';
-                                state.data = action.payload;
-                        })
-                        .addCase(deleteDepartments.rejected, (state, action) => {
-                                state.status = 'failed';
-                                state.error = action.error.message;
-                        });
+        reducers: {
+                deleteDepartmentsStart: (state) => {
+                        state.isLoading = true;
+                        state.error = null;
+                },
+                deleteDepartmentsSuccess: (state) => {
+                        state.isLoading = false;
+                        state.error = null;
+                },
+                editDepartmentsFailure: (state, action) => {
+                        state.isLoading = false;
+                        state.error = action.payload;
+                },
         },
 });
+
+export const { deleteDepartmentsStart, deleteDepartmentsSuccess, deleteDepartmentsFailure } = deleteDepartmentsSlice.actions;
 
 export default deleteDepartmentsSlice.reducer;

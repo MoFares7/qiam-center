@@ -21,50 +21,22 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
-import DialogInfo from '../../components/DialogAddInfo';
-import DialogTextField from '../../components/DialogTextField';
 
 export default function TableCard({ columns, rows, onEditClick, onDeleteClick }) {
         const [page, setPage] = useState(0);
         const [rowsPerPage, setRowsPerPage] = useState(10);
-        const [editDialogOpen, setEditDialogOpen] = useState(false);
-        const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-        const [selectedRowId, setSelectedRowId] = useState(null);
-
-
-        const handleCloseDialog = () => {
-                setEditDialogOpen(false); // Close the dialog
-        };
-
+       
         const handleChangePage = (event, newPage) => {
                 setPage(newPage);
         };
 
-        const handleChangeRowsPerPage = (event) => {
-                setRowsPerPage(+event.target.value);
-                setPage(0);
-        };
-
         const handleEditClick = (rowId) => {
-                setSelectedRowId(rowId);
-                onEditClick(selectedRowId)
-                setEditDialogOpen(true);
+                onEditClick(rowId)
+               
         }
 
         const handleDeleteClick = (rowId) => {
-                setSelectedRowId(rowId);
-                setDeleteDialogOpen(true);
-        };
-
-        const handleDeleteConfirmation = () => {
-                // Call your delete function here with the selectedRowId
-                console.log("selectedRowId " + selectedRowId)
-                onDeleteClick(selectedRowId);
-                setDeleteDialogOpen(false);
-        };
-
-        const handleDeleteDialogClose = () => {
-                setDeleteDialogOpen(false);
+                onDeleteClick(rowId);
         };
 
         return (
@@ -143,33 +115,7 @@ export default function TableCard({ columns, rows, onEditClick, onDeleteClick })
                                 />
                         </Stack>
 
-                        {editDialogOpen && (
-                                <DialogInfo
-                                />
-                        )}
-
-
-                        {/* Delete Confirmation Dialog */}
-                        <Dialog open={deleteDialogOpen} onClose={handleDeleteDialogClose}>
-                                <DialogTitle sx={{
-                                        fontFamily: 'Cairo',
-                                }}>عملية حذف نهائية</DialogTitle>
-                                <DialogContent>
-                                        هل أنت متأكد من إتمام عملية الحذف
-                                </DialogContent>
-                                <DialogActions>
-                                        <Button onClick={handleDeleteDialogClose} color="primary" sx={{
-                                                fontFamily: 'Cairo',
-                                        }}>
-                                                تراجع
-                                        </Button>
-                                        <Button onClick={handleDeleteConfirmation} color="error" sx={{
-                                                fontFamily: 'Cairo',
-                                        }}>
-                                                حذف
-                                        </Button>
-                                </DialogActions>
-                        </Dialog>
+               
                 </Paper >
         );
 }

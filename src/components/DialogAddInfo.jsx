@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 
-const DialogInfo = ({ dialogContent, errorCheck, onClickOpen, onClickClose, titleDialog }) => {
+const DialogInfo = ({ dialogContent, onChnage, onClickOpen, onClickClose, titleDialog }) => {
         return (
                 <>
                         <Dialog open={onClickOpen} onClose={onClickClose}>
@@ -14,7 +14,7 @@ const DialogInfo = ({ dialogContent, errorCheck, onClickOpen, onClickClose, titl
                                                 إلغاء
                                         </Button>
                                         <Button
-                                                onClick={errorCheck}
+                                                onClick={onChnage}
                                                 color="primary"
                                                 sx={{
                                                         fontFamily: 'Cairo',
