@@ -14,7 +14,7 @@ import { getDepartments } from '../../services/DepartmentServices/getDepatmentsS
 import { deleteDepartments } from '../../services/DepartmentServices/deleteDepartmentsSlice';
 import DialogTextField from '../../components/DialogTextField';
 import DialogInfo from '../../components/DialogAddInfo';
-import addDepartmentSlice, { addDepartments } from '../../services/DepartmentServices/addDepartmentSlice';
+import { addDepartments } from '../../services/DepartmentServices/addDepartmentSlice';
 import { addDepartmentsStart, addDepartmentsSuccess, addDepartmentsFailure } from '../../services/DepartmentServices/addDepartmentSlice';
 
 const DepartmentsPage = () => {
@@ -22,9 +22,9 @@ const DepartmentsPage = () => {
   const [departmentName, setDepartmentName] = useState('');
   const [departmentDescription, setDepartmentDescription] = useState('');
   const [departmentNameError, setDepartmentNameError] = useState(false);
-
   const dispatch = useDispatch();
   const departments = useSelector((state) => state.getDepartment.data);
+  const [isEditing, setIsEditing] = useState(false);
 
   // Ensure that departments is always an array, if not set it to an empty array
   const departmentList = Array.isArray(departments) ? departments : [];
@@ -33,25 +33,42 @@ const DepartmentsPage = () => {
   const [selectedDepartmentId, setSelectedDepartmentId] = useState(null);
 
 
-  //?  open dialog add department
-  const handleOpenDialog = () => {
-    setOpen(true); // Open the dialog
-  };
-  const handleCloseDialog = () => {
-    setOpen(false); // Close the dialog
+  //?  ////////// open dialog add department ////////////////
+  const handleOpenDialog = (editing = false, rowId = null) => {
+    setIsEditing(editing);
+    setOpen(true);
+
+    // If editing, populate the input fields with department details
+    if (editing && rowId !== null) {
+      const selectedDepartment = departmentList.find((department) => department.dep_id === rowId);
+      setDepartmentName(selectedDepartment.name);
+      setDepartmentDescription(selectedDepartment.description);
+      setSelectedDepartmentId(rowId);
+    } else {
+      setDepartmentName('');
+      setDepartmentDescription('');
+      setSelectedDepartmentId(null);
+    }
   };
 
+  const handleCloseDialog = () => {
+    setOpen(false);
+    setDepartmentName('');
+    setDepartmentDescription('');
+    setSelectedDepartmentId(null);
+    setIsEditing(false);
+  };
 
   //? ////////////////handle get Department///////////////////////
   useEffect(() => {
     dispatch(getDepartments());
   }, [dispatch]);
 
-
   //? ////////////////handle add Department///////////////////////// 
   const handleAddDepartment = () => {
     if (departmentName.trim() === '') {
       setDepartmentNameError(true);
+
     } else {
       setDepartmentNameError(false);
 
@@ -68,6 +85,7 @@ const DepartmentsPage = () => {
           // On success, you can perform any additional actions here
           dispatch(addDepartmentsSuccess());
           dispatch(getDepartments());
+          handleCloseDialog();
         })
         .catch((error) => {
           dispatch(addDepartmentsFailure(error));
@@ -76,11 +94,8 @@ const DepartmentsPage = () => {
   };
 
   //? ////////////////handle Edit Department////////////////////////////
-  const handleEditClick = (departmentId) => {
-    // const departmentToEdit = departmentList.find((department) => department.id === departmentId);
-    // Dispatch action to open dialog and pass data to it
-    // dispatch(editDepartments(2));
-    // dispatch(setEditDialogOpen(true));
+  const handleEditClick = (rowId) => {
+    handleOpenDialog(true);
 
   };
 
@@ -247,10 +262,12 @@ const DepartmentsPage = () => {
         إضافة قسم
       </Button>
 
+
       <DialogInfo
         errorCheck={handleAddDepartment}
         onClickOpen={open}
         onClickClose={handleCloseDialog}
+        titleDialog={isEditing ? "تعديل قسم" : "إضافة قسم"}
         dialogContent={
           <>
             <DialogTextField

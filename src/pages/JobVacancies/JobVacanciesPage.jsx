@@ -34,6 +34,7 @@ const JobVacanciesPage = () => {
   const handleCloseDialog = () => {
     setOpen(false); // Close the dialog
   };
+  
   const handleAddDepartment = () => {
     // Perform validation
     if (departmentName.trim() === '') {

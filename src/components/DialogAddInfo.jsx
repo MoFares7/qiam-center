@@ -1,16 +1,11 @@
 import React, { useState } from 'react';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 
-const DialogInfo = ({ dialogContent, errorCheck, onClickOpen, onClickClose }) => {
-        const [open, setOpen] = useState(false);
-
-        const handleCloseDialog = () => {
-                setOpen(false); // Close the dialog
-        };
+const DialogInfo = ({ dialogContent, errorCheck, onClickOpen, onClickClose, titleDialog }) => {
         return (
                 <>
                         <Dialog open={onClickOpen} onClose={onClickClose}>
-                                <DialogTitle sx={{ fontFamily: 'Cairo', fontSize: '18px' }}>إضافة قسم</DialogTitle>
+                                <DialogTitle sx={{ fontFamily: 'Cairo', fontSize: '18px' }}>{titleDialog}</DialogTitle>
                                 <DialogContent>
                                         {dialogContent}
                                 </DialogContent>

@@ -47,6 +47,7 @@ export default function TableCard({ columns, rows, onEditClick, onDeleteClick })
 
         const handleEditClick = (rowId) => {
                 setSelectedRowId(rowId);
+                onEditClick(selectedRowId)
                 setEditDialogOpen(true);
         }
 
