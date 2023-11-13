@@ -13,14 +13,16 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getDepartments } from '../../services/DepartmentServices/getDepatmentsSlice';
 import { deleteDepartments } from '../../services/DepartmentServices/deleteDepartmentsSlice';
 import DialogTextField from '../../components/DialogTextField';
-import DialogInfo from '../../components/DialogInfo';
+import DialogInfo from '../../components/DialogAddInfo';
 import addDepartmentSlice, { addDepartments } from '../../services/DepartmentServices/addDepartmentSlice';
 import { addDepartmentsStart, addDepartmentsSuccess, addDepartmentsFailure } from '../../services/DepartmentServices/addDepartmentSlice';
 
 const DepartmentsPage = () => {
+  const [open, setOpen] = useState(false);
   const [departmentName, setDepartmentName] = useState('');
   const [departmentDescription, setDepartmentDescription] = useState('');
   const [departmentNameError, setDepartmentNameError] = useState(false);
+
   const dispatch = useDispatch();
   const departments = useSelector((state) => state.getDepartment.data);
 
@@ -29,6 +31,16 @@ const DepartmentsPage = () => {
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedDepartmentId, setSelectedDepartmentId] = useState(null);
+
+
+  //?  open dialog add department
+  const handleOpenDialog = () => {
+    setOpen(true); // Open the dialog
+  };
+  const handleCloseDialog = () => {
+    setOpen(false); // Close the dialog
+  };
+
 
   //? ////////////////handle get Department///////////////////////
   useEffect(() => {
@@ -43,7 +55,7 @@ const DepartmentsPage = () => {
     } else {
       setDepartmentNameError(false);
 
-      dispatch(addDepartmentsStart()); 
+      dispatch(addDepartmentsStart());
       dispatch(
         addDepartments({
           body: {
@@ -58,18 +70,18 @@ const DepartmentsPage = () => {
           dispatch(getDepartments());
         })
         .catch((error) => {
-          dispatch(addDepartmentsFailure(error)); 
+          dispatch(addDepartmentsFailure(error));
         });
     }
   };
 
-//? ////////////////handle Edit Department////////////////////////////
+  //? ////////////////handle Edit Department////////////////////////////
   const handleEditClick = (departmentId) => {
     // const departmentToEdit = departmentList.find((department) => department.id === departmentId);
     // Dispatch action to open dialog and pass data to it
     // dispatch(editDepartments(2));
     // dispatch(setEditDialogOpen(true));
-    
+
   };
 
   const handleDeleteConfirmation = async () => {
@@ -215,9 +227,30 @@ const DepartmentsPage = () => {
 
       <TableCard columns={columns} rows={rows} onEditClick={handleEditClick} onDeleteClick={handleDeleteConfirmation} />
 
+      <Button
+        sx={{
+          width: {
+            xs: '200px',
+            sm: '250px',
+            md: '300px',
+          },
+          backgroundColor: '#2962ff',
+          color: 'white',
+          fontFamily: 'Cairo',
+          m: 4.2,
+          '&:hover': {
+            backgroundColor: '#303F9F',
+          },
+        }}
+        onClick={handleOpenDialog}
+      >
+        إضافة قسم
+      </Button>
+
       <DialogInfo
-        titleOpenDialogButton={"إضافة قسم"}
         errorCheck={handleAddDepartment}
+        onClickOpen={open}
+        onClickClose={handleCloseDialog}
         dialogContent={
           <>
             <DialogTextField

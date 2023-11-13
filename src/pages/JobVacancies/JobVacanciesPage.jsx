@@ -16,7 +16,7 @@ import TableCard from '../Department/TableCard';
 import { createDataEmployee } from '../../utils/Helper';
 import DialogTextField from '../../components/DialogTextField';
 import Autocomplete from '@mui/material/Autocomplete';
-import DialogInfo from '../../components/DialogInfo';
+import DialogInfo from '../../components/DialogAddInfo';
 const options = ['الموارد البشرية', 'القسم الاعلامي', "قسم الاستقبال", "قسم التعينات"];
 
 

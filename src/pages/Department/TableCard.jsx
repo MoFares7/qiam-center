@@ -21,12 +21,20 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
+import DialogInfo from '../../components/DialogAddInfo';
+import DialogTextField from '../../components/DialogTextField';
 
 export default function TableCard({ columns, rows, onEditClick, onDeleteClick }) {
         const [page, setPage] = useState(0);
         const [rowsPerPage, setRowsPerPage] = useState(10);
+        const [editDialogOpen, setEditDialogOpen] = useState(false);
         const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
         const [selectedRowId, setSelectedRowId] = useState(null);
+
+
+        const handleCloseDialog = () => {
+                setEditDialogOpen(false); // Close the dialog
+        };
 
         const handleChangePage = (event, newPage) => {
                 setPage(newPage);
@@ -36,6 +44,11 @@ export default function TableCard({ columns, rows, onEditClick, onDeleteClick })
                 setRowsPerPage(+event.target.value);
                 setPage(0);
         };
+
+        const handleEditClick = (rowId) => {
+                setSelectedRowId(rowId);
+                setEditDialogOpen(true);
+        }
 
         const handleDeleteClick = (rowId) => {
                 setSelectedRowId(rowId);
@@ -98,7 +111,7 @@ export default function TableCard({ columns, rows, onEditClick, onDeleteClick })
                                                                                                         </IconButton>
                                                                                                         <IconButton
                                                                                                                 aria-label="Edit"
-                                                                                                                onClick={() => onEditClick(row.id)}
+                                                                                                                onClick={() => handleEditClick(row.id)}
                                                                                                         >
                                                                                                                 <EditIcon
                                                                                                                         style={{ fontSize: 20, color: '#1d2634' }}
@@ -128,6 +141,12 @@ export default function TableCard({ columns, rows, onEditClick, onDeleteClick })
                                         onChange={handleChangePage}
                                 />
                         </Stack>
+
+                        {editDialogOpen && (
+                                <DialogInfo
+                                />
+                        )}
+
 
                         {/* Delete Confirmation Dialog */}
                         <Dialog open={deleteDialogOpen} onClose={handleDeleteDialogClose}>
