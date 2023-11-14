@@ -8,7 +8,7 @@ const SidebarLayout = () => {
                 <div className="container">
                         <Sidebar />
                         <main style={{
-                              
+
                                 marginLeft: '250px',
                                 padding: '20px'
                         }}>

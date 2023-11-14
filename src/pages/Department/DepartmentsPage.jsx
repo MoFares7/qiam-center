@@ -20,6 +20,8 @@ import { getDepartments } from '../../services/DepartmentServices/getDepatmentsS
 import { addDepartments, addDepartmentsStart, addDepartmentsSuccess, addDepartmentsFailure } from '../../services/DepartmentServices/addDepartmentSlice';
 import { editDepartments, editDepartmentsFailure, editDepartmentsSuccess } from '../../services/DepartmentServices/editDepartmentsSlice';
 import { deleteDepartments, deleteDepartmentsSuccess, deleteDepartmentsFailure } from '../../services/DepartmentServices/deleteDepartmentsSlice';
+import SearchHeader from '../../components/SearchHeader';
+import MainButton from '../../components/MainButton';
 
 const DepartmentsPage = () => {
   const [open, setOpen] = useState(false);
@@ -28,7 +30,7 @@ const DepartmentsPage = () => {
   const [departmentNameError, setDepartmentNameError] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [selectedDepartmentId, setSelectedDepartmentId] = useState(null);
+  const [selectedDepartmentId, setSelectedDepartmentId] = useState(1);
 
   const dispatch = useDispatch();
   const departments = useSelector((state) => state.getDepartment.data);
@@ -47,7 +49,7 @@ const DepartmentsPage = () => {
       const selectedDepartment = departmentList.find((department) => department.dep_id === rowId);
       setDepartmentName(selectedDepartment.name);
       setDepartmentDescription(selectedDepartment.description);
-      setSelectedDepartmentId(rowId);
+      setSelectedDepartmentId(selectedDepartment.dep_id);
     } else {
       setDepartmentName('');
       setDepartmentDescription('');
@@ -102,15 +104,20 @@ const DepartmentsPage = () => {
   };
 
   //? ////////////////handle Edit Department////////////////////////////
-  const handleEditClick = (rowId) => {
-    handleOpenDialog(false);
-    setIsEditing(true)
+  const handleEditOpenClick = (rowId) => {
 
+    handleEditClick(rowId);
+  }
+  const handleEditClick = (rowId) => {
+    handleOpenDialog(true, 1);
+    setIsEditing(true)
+    console.log("row id one " + rowId)
     if (departmentName.trim() === '') {
       setDepartmentNameError(true);
     } else {
       setDepartmentNameError(false);
-
+      handleOpenDialog(false);
+      console.log("row id two " + rowId)
       dispatch(
         editDepartments({
           id: rowId,
@@ -121,7 +128,7 @@ const DepartmentsPage = () => {
         })
       )
         .then((response) => {
-
+          console.log("row id three" + rowId)
           console.log('Edit successful:', response);
           dispatch(editDepartmentsSuccess());
           handleCloseDialog();
@@ -201,20 +208,6 @@ const DepartmentsPage = () => {
     numemployee: department.employees_count,
     operation: (
       <>
-        <IconButton
-          aria-label="Delete"
-          onClick={() => {
-            handleDeleteClick(department.dep_id);
-            console.log("department.name " + department.name);
-          }}
-        >
-
-        </IconButton>
-        <IconButton
-          aria-label="Edit"
-          onClick={() => handleEditClick(department.dep_id)}
-        >
-        </IconButton>
       </>
     ),
   }));
@@ -241,75 +234,25 @@ const DepartmentsPage = () => {
         flexDirection: 'column',
         alignItems: 'center',
         pt: 5,
+        pr: 10
       }}
     >
-      <Box
-        sx={{
-          display: {
-            xs: 'block',
-            sm: 'flex',
-            md: 'flex',
-            lg: 'flex',
-          },
-        }}
-      >
-        <Button
-          sx={{
-            backgroundColor: '#2962ff',
-            color: 'white',
-            fontFamily: 'Cairo',
-            mb: 0.4,
-            ml: 2,
-            '&:hover': {
-              backgroundColor: '#303F9F',
-            },
-          }}
-          variant="contained"
-          endIcon={<SearchIcon sx={{ pr: 1 }} />}
-        >
-          ابحث
-        </Button>
-        <SearchField placeholder="البحث عن قسم ما" />
-        <Button
-          sx={{
-            backgroundColor: '#4CAF50',
-            color: 'white',
-            fontFamily: 'Cairo',
-            mb: 0.4,
-            mr: 2,
-            '&:hover': {
-              backgroundColor: '#8BC34A',
-            },
-          }}
-          variant="contained"
-        >
-          تحديث
-        </Button>
-      </Box>
+      <SearchHeader />
+
       <Divider sx={{ pt: 3 }} />
 
       <TableCard columns={columns} rows={rows} onEditClick={handleEditClick} onDeleteClick={handleDeleteClick} />
 
-      <Button
-        sx={{
-          width: {
-            xs: '200px',
-            sm: '250px',
-            md: '300px',
-          },
-          backgroundColor: '#2962ff',
-          color: 'white',
-          fontFamily: 'Cairo',
-          m: 4.2,
-          '&:hover': {
-            backgroundColor: '#303F9F',
-          },
-        }}
-        onClick={handleAddClick}
-      >
-        إضافة قسم
-      </Button>
-
+      <MainButton
+        title="إضافة قسم"
+        color='#2962ff'
+        width={{
+          xs: '200px',
+          sm: '250px',
+          md: '300px',
+        }
+        } onClick={handleAddClick}
+      />
 
       <DialogInfo
         onChnage={isEditing ? handleEditClick : handleAddDepartment}
@@ -390,12 +333,11 @@ const DepartmentsPage = () => {
           }}>
             تراجع
           </Button>
-          <Button onClick={() => handleDeleteClick(rowId)} color="error" sx={{
+          <Button onClick={handleDeleteClick} color="error" sx={{
             fontFamily: 'Cairo',
           }}>
             حذف
           </Button>
-
         </DialogActions>
       </Dialog>
     </Box>
@@ -403,3 +345,6 @@ const DepartmentsPage = () => {
 };
 
 export default DepartmentsPage;
+
+
+

@@ -1,6 +1,7 @@
 import { Box, Divider, Typography } from '@mui/material';
 import React, { useState } from 'react';
 import StatisticsCard from './StatisticsCard';
+import Header from './HeaderCard';
 import { useTranslation } from 'react-i18next';
 import {
         ResponsiveContainer,
@@ -71,10 +72,12 @@ const HomePage = () => {
 
         return (
                 <Box sx={{ display: 'block' }}>
+                        <Header />
                         <div>
                                 <button onClick={() => changeLanguage('en')}>English</button>
                                 <button onClick={() => changeLanguage('ar')}>العربية</button>
                         </div>
+                        
                         <main className='main-container'>
                                 <div className='main-cards'>
                                         {/* <div className='card'>

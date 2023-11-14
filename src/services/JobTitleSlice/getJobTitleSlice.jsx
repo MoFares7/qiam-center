@@ -1,45 +1,46 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-export const getDepartments = createAsyncThunk(
-        'api/departments',
+export const getJobTitles = createAsyncThunk(
+        'api/job-titles',
         async () => {
                 try {
-                        const response = await axios.get('http://127.0.0.1:8000/api/departments', {
+                        const response = await axios.get('http://127.0.0.1:8000/api/job-titles', {
                                 headers: {
                                         Authorization: `Bearer ${localStorage.getItem('token')}`,
                                 },
                         });
-                        console.log("Department " + response.data);
-                        return response.data.data; 
+                        console.log(`job Title ${JSON.stringify(response.data)}`);
+                        return response.data.data;
                 } catch (e) {
                         throw e;
                 }
         }
 );
 
-const getDepartmentsSlice = createSlice({
-        name: 'getDepartment',
+
+const getJobTitlesSlice = createSlice({
+        name: 'getJobTitles',
         initialState: {
                 status: 'idle',
-                data: [], 
+                data: [],
                 error: null,
         },
         reducers: {},
         extraReducers: (builder) => {
                 builder
-                        .addCase(getDepartments.pending, (state) => {
+                        .addCase(getJobTitles.pending, (state) => {
                                 state.status = 'loading';
                         })
-                        .addCase(getDepartments.fulfilled, (state, action) => {
+                        .addCase(getJobTitles.fulfilled, (state, action) => {
                                 state.status = 'succeeded';
                                 state.data = action.payload;
                         })
-                        .addCase(getDepartments.rejected, (state, action) => {
+                        .addCase(getJobTitles.rejected, (state, action) => {
                                 state.status = 'failed';
                                 state.error = action.error.message;
                         });
         },
 });
 
-export default getDepartmentsSlice.reducer;
+export default getJobTitlesSlice.reducer;

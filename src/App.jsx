@@ -10,9 +10,7 @@ import theme from './utils/theme';
 import JobVacanciesPage from './pages/JobVacancies/JobVacanciesPage';
 import SidebarLayout from './components/SidebarLayout';
 import '@fontsource/cairo/400.css';
-import i18n from './assets/Translate/i18n';
-import enTranslation from './assets/Translate/english.json';
-import arTranslation from './assets/Translate/arbic.json';
+import JobTitlesPage from './pages/JobTitles/JobTitlesPage';
 
 function App() {
   const { i18n } = useTranslation();
@@ -28,6 +26,7 @@ function App() {
             <Route index element={<HomePage />} />
             <Route path="/department" element={<DepartmentsPage />} />
             <Route path="/jobVacancies" element={<JobVacanciesPage />} />
+            <Route path="/jobsTitle" element={<JobTitlesPage />} />
           </Route>
 
         </Routes>

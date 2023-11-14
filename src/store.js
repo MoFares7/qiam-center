@@ -5,6 +5,9 @@ import departmentReducer from './services/DepartmentServices/getDepatmentsSlice'
 import addepartmentReducer from './services/DepartmentServices/addDepartmentSlice';
 import editdepartmentReducer from './services/DepartmentServices/editDepartmentsSlice';
 import deletedepartmentReducer from './services/DepartmentServices/deleteDepartmentsSlice';
+import getJobVacanciesReducer from './services/JobVacanciesSlice/getJobSlice';
+import addJobVacanciesReducer from './services/JobVacanciesSlice/addJobsSlice';
+import getJobTitlesReducer from './services/JobTitleSlice/getJobTitleSlice';
 
 const store = configureStore({
     reducer: {
@@ -13,7 +16,10 @@ const store = configureStore({
         getDepartment: departmentReducer,
         addDepartments: addepartmentReducer,
         editDepartments: editdepartmentReducer,
-        deleteDepartments: deletedepartmentReducer
+        deleteDepartments: deletedepartmentReducer,
+        getJobVacancies: getJobVacanciesReducer,
+        addJobVacancies: addJobVacanciesReducer,
+        getJobTitles: getJobTitlesReducer,
 
     }
 });
